@@ -1,0 +1,101 @@
+from tkinter import*
+from random import randint, choice
+from tkinter import messagebox
+import os
+counter = 0
+list = []
+def give_list():
+    global counter
+    lines = open("How.txt", "r", encoding='utf-8')
+    if os.stat("How.txt").st_size != 0:
+        s = 0
+        for line in lines:
+            s+=1
+            lbl_3['text'] += f'{s}. {line}'
+            #list.append(line)
+        counter += 1
+        if counter % 2 == 0:
+            lbl_3['text'] = ''
+        #lbl_3['text'] = list
+
+        print(list)
+        list.clear()
+        lines.close()
+    else:
+        lbl_3['text'] = ''
+def delete_post():
+    lines = open("How.txt", "r+", encoding='utf-8')
+    if os.stat("How.txt").st_size != 0:
+        for line in lines:
+            list.append(line)
+        del list[-1]
+        print(list)
+
+        lines.truncate(0)  # need '0' when using r+
+        lines.close()
+        lines = open('How.txt','w' ,encoding='utf-8')
+        lines.writelines(list)
+        lines.close()
+        lines = open("How.txt", "r+", encoding='utf-8')
+        lbl_3['text'] = ''
+        s = 0
+        for lin in lines:
+            s+=1
+            lbl_3['text'] += f'{s}. {lin}'
+        lines.close()
+        list.clear()
+    else:
+        messagebox.showwarning('WARNING','У вас нет списка идей')
+def add_idea():
+    value = ent.get()
+    if value != '':
+        with open('How.txt','a+', encoding='utf-8') as file:
+            file.write(value +'\n')
+        ent.delete(0, END)
+    else:
+        messagebox.showinfo('WARNING',( 'Поле для ввода пустое'))
+root = Tk()
+root.resizable(width=False, height=False)
+root.title('Генератор идей')
+def random_idea():
+    if os.stat("How.txt").st_size != 0:
+        with open('How.txt','r',encoding='utf-8') as file:
+            lines = choice(file.readlines())
+            messagebox.showinfo('Идея:', lines)
+            lbl_2['text'] = lines
+    else:
+        messagebox.showerror('WARNING', 'У вас нет идей')
+def Enter_Click(eror):
+    add_idea()
+root['bg'] = 'black'
+
+lbl = Label(root, text = 'Добавьте идею', bg='black',fg= 'lime',font= 'Arial,25')
+lbl.grid(row = 0 , column = 0,padx = 220,pady = 20)
+
+ent = Entry(root,fg= 'red', bg = 'black',width=47)
+ent.grid(row = 1 , column = 0,padx = 180,pady = 10)
+
+bt = Button(root, text = 'Добавить',width='40',height='2',fg = 'black', bg= 'white',command=add_idea)
+bt.grid(row = 2 , column = 0,padx = 180,pady = 20)
+root.bind('<Return>', Enter_Click)
+lbl_1 = lbl = Label(root, text = 'Ты можешь сгенерировать идею!!!', bg='black',fg= 'lime',font= 'Arial,14')
+lbl_1.grid(row = 3 , column = 0,padx = 180)
+
+bt_1 = Button(root, text = 'показать идею',command=random_idea,width='40',height='2')
+bt_1.grid(row = 4 , column = 0,padx = 180,pady = 20)
+
+btn_delete  = Button(root, command=delete_post,width='10', text = 'del')
+btn_delete.place(x = 20, y = 60)
+
+lbl_2 = lbl = Label(root, text = '', bg='black',fg= 'lime',font= 'Arial,14')
+lbl_2.grid(row = 5 , column = 0,padx = 180, pady=10)
+
+btn_ideas = Button(root, text = 'list',command=give_list,width='10')
+btn_ideas.place(x = 20, y = 120)
+
+
+lbl_3 = Label(root, text = '', bg='black',fg= '#decf49',font= 'Arial,5')
+lbl_3.place(x = 500, y = 60)
+root.geometry('720x360')
+root.mainloop()
+
